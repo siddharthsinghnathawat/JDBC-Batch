@@ -15,10 +15,13 @@ class Main{
             System.out.println(e.getMessage());
         }
 
-        try{
+        try(
             Connection connection = DriverManager.getConnection(url,username,password);
-            Statement statement=connection.createStatement();
             Scanner scanner=new Scanner(System.in);
+        ){
+            String query="INSERT INTO stud(name,age,marks)VALUES(?,?,?)";
+            PreparedStatement preparedStatement=connection.prepareStatement(query);
+            
 
             while (true){
                 System.out.print("Enter Name: ");
@@ -27,17 +30,19 @@ class Main{
                 int age=scanner.nextInt();
                 System.out.print("Enter Marks: ");
                 Double marks=scanner.nextDouble();
+                preparedStatement.setString(1,name);
+                preparedStatement.setInt(2,age);
+                preparedStatement.setDouble(3,marks);
                 System.out.print("Enter more data(Y/N): ");
                 String choice=scanner.next();
-                String query=String.format("INSERT INTO stud(name,age,marks)VALUES('%s',%d,%f)",name,age,marks);
-                statement.addBatch(query);
+                
+                PreparedStatement.addBatch();
                 if(choice.toUpperCase().equals("N")){
                     break;
                 }
             }
-           int[] arr=statement.executeBatch();
-
-
+           int[] result=preparedStatement.executeBatch();
+         System.out.println(result.length + " record(s) inserted.");
 
 
 
